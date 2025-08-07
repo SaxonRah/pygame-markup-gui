@@ -1,4 +1,6 @@
-![PyGame Markup GUI](https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/pygame_markup_gui.png "PyGame Markup GUI")
+<p align="center">
+  <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/pygame_markup_gui.png?raw=true" alt="PyGame Markup GUI"/>
+</p>
 
 # PyGame Markup GUI - [Version 0.1.0]
 
