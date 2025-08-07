@@ -186,8 +186,11 @@ Provides comprehensive event handling and user interaction.
 
 ### Rendering Engines
 
-**MarkupRenderer** (`markup_renderer.py`): Basic HTML/CSS rendering
-**PixelMarkupRenderer** (`pixel_markup_renderer.py`): Enhanced sprite-based rendering
+**MarkupRenderer** (`markup_renderer.py`):
+- Basic HTML/CSS rendering
+
+**PixelMarkupRenderer** (`pixel_markup_renderer.py`):
+- Enhanced sprite-based rendering
 
 ### Sprite Engine (`sprite_engine.py`)
 
