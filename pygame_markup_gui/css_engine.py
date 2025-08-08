@@ -2,6 +2,7 @@ import tinycss2
 import re
 from typing import Dict, List, Tuple
 from .html_engine import HTMLElement
+from .browser_defaults import BrowserDefaults
 
 
 class CSSRule:
@@ -24,18 +25,7 @@ class CSSEngine:
 
     def __init__(self):
         self.rules: List[CSSRule] = []
-        self.default_styles = {
-            # HTML5 default styles
-            'html': {'display': 'block'},
-            'body': {'display': 'block', 'margin': '8px'},
-            'div': {'display': 'block'},
-            'span': {'display': 'inline'},
-            'p': {'display': 'block', 'margin': '1em 0'},
-            'h1': {'display': 'block', 'font-size': '2em', 'margin': '0.67em 0', 'font-weight': 'bold'},
-            'h2': {'display': 'block', 'font-size': '1.5em', 'margin': '0.75em 0', 'font-weight': 'bold'},
-            'button': {'display': 'inline-block', 'padding': '4px 8px', 'border': '1px solid #ccc'},
-            'input': {'display': 'inline-block', 'padding': '4px', 'border': '1px solid #ccc'},
-        }
+        self.default_styles = BrowserDefaults.DEFAULTS
 
     def parse_css(self, css_string: str):
         """Parse CSS string into rules"""
@@ -70,32 +60,22 @@ class CSSEngine:
         return ''.join(token.serialize() for token in value_tokens).strip()
 
     def compute_style(self, element: HTMLElement) -> Dict[str, str]:
-        """Compute final computed style for element"""
-        style = {}
+        """Compute final style for element with proper browser defaults"""
+        # Start with browser defaults instead of empty dict
+        computed = BrowserDefaults.get_default_style(element.tag).copy()
 
-        # Start with default styles for tag
-        if element.tag in self.default_styles:
-            style.update(self.default_styles[element.tag])
-
-        # Apply matching CSS rules in specificity order
+        # Apply matching CSS rules (existing logic)
         matching_rules = []
         for rule in self.rules:
             if self.selector_matches(rule.selector, element):
                 matching_rules.append(rule)
 
-        # Sort by specificity
+        # Sort by specificity and apply
         matching_rules.sort(key=lambda r: r.specificity)
-
-        # Apply rules
         for rule in matching_rules:
-            style.update(rule.declarations)
+            computed.update(rule.declarations)
 
-        # Apply inline styles (highest specificity)
-        if 'style' in element.attributes:
-            inline_styles = self._parse_inline_style(element.attributes['style'])
-            style.update(inline_styles)
-
-        return style
+        return computed
 
     @staticmethod
     def selector_matches(selector: str, element: HTMLElement) -> bool:

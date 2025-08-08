@@ -2,6 +2,8 @@
 
 import pygame
 import sys
+
+from pygame_markup_gui.debug_renderer import DebugRenderer
 from pygame_markup_gui.html_engine import HTMLParser
 from pygame_markup_gui.enhanced_css_engine import (
     EnhancedCSSEngine,
@@ -1054,7 +1056,8 @@ def main():
     parser = HTMLParser()
     css_engine = EnhancedCSSEngine()
     layout_engine = EnhancedLayoutEngine()
-    renderer = EnhancedMarkupRenderer()
+    # renderer = EnhancedMarkupRenderer()
+    renderer = DebugRenderer()
 
     print("=== ENHANCED CSS ENGINE - COMPLETE SHOWCASE ===")
     print("Features demonstrated:")
@@ -1113,6 +1116,8 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_d:
+                    renderer.toggle_debug()
 
             # Enhanced interaction handling
             elif event.type == pygame.MOUSEMOTION:
@@ -1136,7 +1141,7 @@ def main():
 
         # Render enhanced elements
         try:
-            renderer.render_element(root_element, screen)
+            renderer.render(screen, root_element)
         except Exception as e:
             print(f"Enhanced render error: {e}")
             import traceback

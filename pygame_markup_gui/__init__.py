@@ -14,7 +14,7 @@ from .css_engine import CSSEngine, CSSRule
 from .layout_engine import LayoutEngine
 
 # Renderers
-from .markup_renderer import (MarkupRenderer)
+from .markup_renderer import (BaseMarkupRenderer)
 from .pixel_markup_renderer import PixelMarkupRenderer
 
 # Sprite system
@@ -53,7 +53,7 @@ def create_simple_renderer(sprite_directory="sprites"):
     parser = HTMLParser()
     css_engine = CSSEngine()
     layout_engine = LayoutEngine()
-    renderer = MarkupRenderer()
+    renderer = BaseMarkupRenderer()
 
     return parser, css_engine, layout_engine, renderer
 
@@ -148,7 +148,7 @@ __all__ = [
     'LayoutEngine',
 
     # Renderers
-    'MarkupRenderer',
+    'BaseMarkupRenderer',
     'PixelMarkupRenderer',
 
     # Sprite system

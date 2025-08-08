@@ -2,6 +2,8 @@
 
 import pygame
 import sys
+
+from pygame_markup_gui.debug_renderer import DebugRenderer
 from pygame_markup_gui.html_engine import HTMLParser
 from pygame_markup_gui.enhanced_css_engine import (
     EnhancedCSSEngine,
@@ -396,7 +398,8 @@ def main():
     parser = HTMLParser()
     css_engine = EnhancedCSSEngine()
     layout_engine = EnhancedLayoutEngine()
-    renderer = EnhancedMarkupRenderer()
+    # renderer = EnhancedMarkupRenderer()
+    renderer = DebugRenderer()
 
     print("=== ENHANCED CSS ENGINE - LAYOUT DEBUG ===")
     print("Testing core layout functionality step by step...")
@@ -440,6 +443,8 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_d:
+                    renderer.toggle_debug()
 
         # Clear screen
         screen.fill((60, 70, 80))
@@ -451,7 +456,7 @@ def main():
 
         # Render elements
         try:
-            renderer.render_element(root_element, screen)
+            renderer.render(screen, root_element)
 
             # Draw debug boundaries
             if root_element.layout_box:

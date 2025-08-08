@@ -10,6 +10,8 @@ from pygame_markup_gui.enhanced_css_engine import PositionType
 from pygame_markup_gui.html_engine import HTMLParser
 from pygame_markup_gui.ultra_enhanced_css_engine import UltraEnhancedCSSEngine, UltraEnhancedLayoutEngine, \
     UltraEnhancedMarkupRenderer, UltraEnhancedLayoutBox
+# from pygame_markup_gui.ultra_enhanced_css_engine import UltraEnhancedMarkupRenderer
+from pygame_markup_gui.debug_renderer import DebugRenderer
 from pygame_markup_gui.interactive_engine import InteractionManager
 
 SCREEN_WIDTH = 1600
@@ -28,7 +30,7 @@ def _apply_animated_style_to_layout_box(element):
     # TRANSFORM properties (position, rotation, scale)
     transform_value = style.get('transform', 'none')
     if transform_value != 'none':
-        box.transform = enhanced_css_engine.EnhancedLayoutEngine._parse_transform(None, transform_value)
+        box.transform = enhanced_css_engine.EnhancedLayoutEngine.parse_transform(None, transform_value)
 
     # OPACITY properties
     opacity = style.get('opacity', '1')
@@ -50,11 +52,11 @@ def _apply_animated_style_to_layout_box(element):
     if hasattr(box, 'position_type') and box.position_type != PositionType.STATIC:
         left = style.get('left')
         if left and left != 'auto':
-            box.left = enhanced_css_engine.EnhancedLayoutEngine._parse_enhanced_length(None, left)
+            box.left = enhanced_css_engine.EnhancedLayoutEngine.parse_enhanced_length(None, left)
 
         top = style.get('top')
         if top and top != 'auto':
-            box.top = enhanced_css_engine.EnhancedLayoutEngine._parse_enhanced_length(None, top)
+            box.top = enhanced_css_engine.EnhancedLayoutEngine.parse_enhanced_length(None, top)
 
     # COLOR properties (background-color, border-color)
     # These are handled by the renderer reading computed_style directly
@@ -62,12 +64,12 @@ def _apply_animated_style_to_layout_box(element):
     # MARGIN/PADDING properties
     margin_left = style.get('margin-left', '0')
     if margin_left != '0':
-        box.margin_left = enhanced_css_engine.EnhancedLayoutEngine._parse_enhanced_length(None, margin_left)
+        box.margin_left = enhanced_css_engine.EnhancedLayoutEngine.parse_enhanced_length(None, margin_left)
 
     # BORDER properties
     border_width = style.get('border-width', '0')
     if border_width != '0':
-        box.border_width = enhanced_css_engine.EnhancedLayoutEngine._parse_enhanced_length(None, border_width)
+        box.border_width = enhanced_css_engine.EnhancedLayoutEngine.parse_enhanced_length(None, border_width)
 
     # Z-INDEX properties
     z_index = style.get('z-index', '0')
@@ -899,7 +901,8 @@ def main():
     parser = HTMLParser()
     css_engine = UltraEnhancedCSSEngine()  # Ultra features with animations
     layout_engine = UltraEnhancedLayoutEngine()  # Animation-aware layout
-    renderer = UltraEnhancedMarkupRenderer()  # Advanced effects rendering
+    # renderer = UltraEnhancedMarkupRenderer()  # Advanced effects rendering
+    renderer = DebugRenderer()  # Advanced effects rendering
 
     print("Ultra-Enhanced CSS Engine Demo")
     print("Features: Animations, Transitions, Filters, Advanced Typography, Blend Modes")
@@ -996,6 +999,8 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_d:
+                    renderer.toggle_debug()
                 elif event.key == pygame.K_SPACE:
                     print("Refreshing ultra layout...")
                     layout_engine.layout(root_element, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -1020,7 +1025,7 @@ def main():
             if updated_elements:
                 animation_frame_count += 1
 
-                # FIX: Re-apply animated styles and re-layout affected elements
+                # Re-apply animated styles and re-layout affected elements
                 for element in updated_elements:
                     # Re-apply the updated computed style to the layout box
                     if hasattr(element.layout_box, 'animated_properties'):
@@ -1041,7 +1046,8 @@ def main():
 
         # Render ultra UI
         try:
-            renderer.render_element(root_element, screen)
+            # renderer.render_element(root_element, screen)
+            renderer.render(screen, root_element)
 
             # Ultra debug info
             if frame_count % (fps * 3) == 0:  # Every 3 seconds
@@ -1064,7 +1070,7 @@ def main():
             screen.blit(anim_text, (10, 70))
 
         except Exception as e:
-            print(f"❌ Ultra render error: {e}")
+            print(f"Ultra render error: {e}")
             import traceback
             traceback.print_exc()
 

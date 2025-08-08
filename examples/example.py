@@ -1,7 +1,8 @@
 import pygame
 import sys
-from pygame_markup_gui import HTMLParser, CSSEngine, LayoutEngine, MarkupRenderer
+from pygame_markup_gui import HTMLParser, CSSEngine, LayoutEngine
 from pygame_markup_gui.interactive_engine import InteractionManager, FormHandler, ScrollableContainer
+from pygame_markup_gui.debug_renderer import DebugRenderer
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -157,7 +158,8 @@ def main():
     parser = HTMLParser()
     css_engine = CSSEngine()
     layout_engine = LayoutEngine()
-    renderer = MarkupRenderer()
+    # renderer = MarkupRenderer()
+    renderer = DebugRenderer()
 
     print("Parsing HTML...")
     root_element = parser.parse_fragment(html)
@@ -271,9 +273,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_d:
+                    renderer.toggle_debug()
                 else:
                     # Let interaction manager handle it
                     if interaction_manager.handle_key_down(event.key, event.unicode):
@@ -315,7 +320,7 @@ def main():
 
             # Render HTML to pygame
             try:
-                renderer.render_element(root_element, screen)
+                renderer.render(screen, root_element)
 
                 # Draw focus indicator
                 if interaction_manager.focused_element and interaction_manager.focused_element.layout_box:

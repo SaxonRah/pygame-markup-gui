@@ -1,9 +1,9 @@
 import pygame
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 from .html_engine import HTMLElement
 
 
-class MarkupRenderer:
+class BaseMarkupRenderer:
     """Render HTML/CSS to pygame surfaces"""
 
     def __init__(self):
@@ -11,8 +11,17 @@ class MarkupRenderer:
         self.font_cache = {}
         self.color_cache = {}
 
-    def render_element(self, element: HTMLElement, target_surface: pygame.Surface):
+    def render_element(self, target_surface: pygame.Surface, element: HTMLElement):
         """Render element and all children to target surface using absolute positioning"""
+
+        # Use precise text rendering
+        if element.text_content.strip():
+            self._render_text(target_surface, element)
+
+        # Render children
+        for child in element.children:
+            self.render_element(target_surface, child)
+
         self._render_recursive(element, target_surface)
 
     def _render_recursive(self, element: HTMLElement, target_surface: pygame.Surface):
@@ -283,3 +292,163 @@ class MarkupRenderer:
                 return float(value)
         except (ValueError, TypeError):
             return 0
+
+
+class MarkupRenderer(BaseMarkupRenderer):
+    """Precise text rendering that matches browser behavior"""
+
+    def __init__(self):
+        super().__init__()
+        self.metrics_cache = {}
+
+    def render_text_precise(self, surface: pygame.Surface, element: HTMLElement):
+        """Render text with browser-precise positioning"""
+        text = element.text_content.strip()
+        if not text:
+            return None
+
+        style = element.computed_style
+        box = element.layout_box
+
+        # Get font with precise metrics
+        font_info = self._get_precise_font(style)
+        font = font_info['font']
+        metrics = font_info['metrics']
+
+        # Parse color
+        color = self._parse_color(style.get('color', '#000000'))
+        if not color:
+            return None
+
+        # Calculate precise text position
+        text_pos = self._calculate_precise_text_position(text, font, metrics, box, style)
+
+        # Render with precise baseline
+        text_surface = font.render(text, True, color)
+        surface.blit(text_surface, text_pos)
+
+        return text_pos  # For debugging
+
+    def _get_precise_font(self, style: Dict[str, str]) -> Dict:
+        """Get font with precise metrics matching browsers"""
+        font_family = style.get('font-family', 'Arial').strip('\'"')
+        font_size = self._parse_font_size(style.get('font-size', '16px'))
+        font_weight = style.get('font-weight', 'normal')
+        font_style = style.get('font-style', 'normal')
+
+        cache_key = (font_family, font_size, font_weight, font_style)
+
+        if cache_key not in self.font_cache:
+            # Try to get system font that matches browser behavior
+            bold = font_weight in ['bold', '700', '800', '900']
+            italic = font_style == 'italic'
+
+            try:
+                # Try system font first (more accurate)
+                font = pygame.font.SysFont(font_family, font_size, bold=bold, italic=italic)
+            except:
+                # Fallback to default font
+                font = pygame.font.Font(None, font_size)
+
+            # Calculate precise metrics
+            metrics = self._calculate_font_metrics(font, font_size)
+
+            self.font_cache[cache_key] = {
+                'font': font,
+                'metrics': metrics
+            }
+
+        return self.font_cache[cache_key]
+
+    def _calculate_font_metrics(self, font: pygame.font.Font, font_size: int) -> Dict:
+        """Calculate precise font metrics"""
+        # Test character for metrics
+        test_char = 'M'  # Em square reference
+
+        ascent = font.get_ascent()
+        descent = font.get_descent()
+        line_height = ascent + descent
+
+        # Calculate more precise metrics
+        test_surface = font.render(test_char, True, (0, 0, 0))
+        char_width = test_surface.get_width()
+        char_height = test_surface.get_height()
+
+        return {
+            'ascent': ascent,
+            'descent': descent,
+            'line_height': line_height,
+            'char_width': char_width,
+            'char_height': char_height,
+            'font_size': font_size,
+            'em_ratio': char_width / font_size if font_size > 0 else 1.0
+        }
+
+    def _calculate_precise_text_position(self, text: str, font: pygame.font.Font,
+                                         metrics: Dict, box, style: Dict[str, str]) -> Tuple[int, int]:
+        """Calculate text position exactly like browsers do"""
+
+        # Get text alignment
+        text_align = style.get('text-align', 'left')
+
+        # Get line height (crucial!)
+        line_height_value = style.get('line-height', '1.2')
+        if line_height_value.endswith('px'):
+            line_height = float(line_height_value[:-2])
+        else:
+            try:
+                multiplier = float(line_height_value)
+                line_height = metrics['font_size'] * multiplier
+            except:
+                line_height = metrics['line_height']
+
+        # Calculate text surface size
+        text_surface = font.render(text, True, (0, 0, 0))
+        text_width = text_surface.get_width()
+        text_height = text_surface.get_height()
+
+        # Calculate x position (horizontal alignment)
+        padding_left = getattr(box, 'padding_left', 0)
+        padding_right = getattr(box, 'padding_right', 0)
+        available_width = box.width - padding_left - padding_right
+
+        if text_align == 'left':
+            x = box.x + padding_left
+        elif text_align == 'center':
+            x = box.x + padding_left + (available_width - text_width) / 2
+        elif text_align == 'right':
+            x = box.x + box.width - padding_right - text_width
+        else:
+            x = box.x + padding_left
+
+        # Calculate y position (vertical alignment) - this is the tricky part!
+        padding_top = getattr(box, 'padding_top', 0)
+        padding_bottom = getattr(box, 'padding_bottom', 0)
+        available_height = box.height - padding_top - padding_bottom
+
+        # Browser-like vertical centering
+        if available_height > line_height:
+            # Center the line height in available space
+            y_offset = (available_height - line_height) / 2
+            y = box.y + padding_top + y_offset
+        else:
+            # Just use padding
+            y = box.y + padding_top
+
+        return (int(x), int(y))
+
+    def _parse_font_size(self, font_size_str: str) -> int:
+        """Parse font size with browser-like defaults"""
+        if font_size_str.endswith('px'):
+            return int(float(font_size_str[:-2]))
+        elif font_size_str.endswith('em'):
+            return int(float(font_size_str[:-2]) * 16)
+        elif font_size_str.endswith('%'):
+            return int(float(font_size_str[:-1]) / 100 * 16)
+        else:
+            # Named sizes
+            named_sizes = {
+                'xx-small': 9, 'x-small': 10, 'small': 13,
+                'medium': 16, 'large': 18, 'x-large': 24, 'xx-large': 32
+            }
+            return named_sizes.get(font_size_str.lower(), 16)

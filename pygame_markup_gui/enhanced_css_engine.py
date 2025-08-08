@@ -800,8 +800,8 @@ class EnhancedCSSEngine(CSSEngine):
 class EnhancedLayoutEngine(LayoutEngine):
     """Enhanced layout engine extending base with positioning, flexbox, and grid"""
 
-    def __init__(self, viewport_width: int = 1200, viewport_height: int = 800):
-        super().__init__(viewport_width, viewport_height)  # Get all base functionality
+    def __init__(self, viewport_width: int = 1200, viewport_height: int = 800, enable_debug=False):
+        super().__init__(viewport_width, viewport_height, enable_debug)
         self.positioned_elements: List[HTMLElement] = []
 
     def layout(self, element: HTMLElement, container_width: float = None,
@@ -878,7 +878,7 @@ class EnhancedLayoutEngine(LayoutEngine):
         box = element.layout_box
 
         # Enhanced positioning
-        box.z_index = int(self._parse_enhanced_length(style.get('z-index', '0')))
+        box.z_index = int(self.parse_enhanced_length(style.get('z-index', '0')))
 
         # Position type
         position = style.get('position', 'static')
@@ -921,7 +921,7 @@ class EnhancedLayoutEngine(LayoutEngine):
         box.opacity = float(style.get('opacity', '1'))
         box.border_radius = self._parse_border_radius(style.get('border-radius', '0'))
         box.box_shadows = self._parse_box_shadows(style.get('box-shadow', 'none'))
-        box.transform = self._parse_transform(style.get('transform', 'none'))
+        box.transform = self.parse_transform(style.get('transform', 'none'))
 
     def _calculate_enhanced_dimensions(self, element: HTMLElement, container_width: float, container_height: float):
         """Calculate dimensions with enhanced constraints"""
@@ -940,7 +940,7 @@ class EnhancedLayoutEngine(LayoutEngine):
                 available_width = container_width - box.margin_left - box.margin_right
                 box.width = max(0, available_width)
         else:
-            box.width = self._parse_enhanced_length(width, container_width)
+            box.width = self.parse_enhanced_length(width, container_width)
 
         # FIXED: Base height calculation - use proper container height
         height = style.get('height', 'auto')
@@ -954,7 +954,7 @@ class EnhancedLayoutEngine(LayoutEngine):
             else:
                 box.height = self._calculate_enhanced_auto_height(element)
         else:
-            box.height = self._parse_enhanced_length(height, container_height)
+            box.height = self.parse_enhanced_length(height, container_height)
 
         # Apply min/max constraints
         if box.min_width is not None:
@@ -1036,9 +1036,9 @@ class EnhancedLayoutEngine(LayoutEngine):
         justify_content = JustifyContent(style.get('justify-content', 'flex-start'))
         align_items = AlignItems(style.get('align-items', 'stretch'))
         align_content = style.get('align-content', 'stretch')
-        gap = self._parse_enhanced_length(style.get('gap', '0'))
-        row_gap = self._parse_enhanced_length(style.get('row-gap', str(gap)))
-        column_gap = self._parse_enhanced_length(style.get('column-gap', str(gap)))
+        gap = self.parse_enhanced_length(style.get('gap', '0'))
+        row_gap = self.parse_enhanced_length(style.get('row-gap', str(gap)))
+        column_gap = self.parse_enhanced_length(style.get('column-gap', str(gap)))
 
         # Sort children by order
         flex_children = sorted(element.children,
@@ -1550,7 +1550,7 @@ class EnhancedLayoutEngine(LayoutEngine):
         columns_str = style.get('grid-template-columns', 'none')
         rows_str = style.get('grid-template-rows', 'none')
         areas_str = style.get('grid-template-areas', 'none')
-        gap = self._parse_enhanced_length(style.get('gap', '0'))
+        gap = self.parse_enhanced_length(style.get('gap', '0'))
 
         print(f"Grid columns: '{columns_str}'")
         print(f"Grid rows: '{rows_str}'")
@@ -2046,7 +2046,8 @@ class EnhancedLayoutEngine(LayoutEngine):
 
             current_y += (child.layout_box.margin_top + child.layout_box.height + child.layout_box.margin_bottom)
 
-    def _apply_enhanced_visual_effects(self, element: HTMLElement):
+    @staticmethod
+    def _apply_enhanced_visual_effects(element: HTMLElement):
         """Apply enhanced visual effects"""
         style = element.computed_style
         box = element.layout_box
@@ -2056,7 +2057,7 @@ class EnhancedLayoutEngine(LayoutEngine):
         if visibility == 'hidden':
             box.opacity = 0
 
-    def _parse_enhanced_length(self, value: str, container_size: float = 0) -> float:
+    def parse_enhanced_length(self, value: str, container_size: float = 0) -> float:
         """Enhanced length parsing with more units"""
         if not value or value == 'auto':
             return 0
@@ -2083,26 +2084,26 @@ class EnhancedLayoutEngine(LayoutEngine):
         """Parse length or return None"""
         if value is None or value == 'auto':
             return None
-        return self._parse_enhanced_length(value)
+        return self.parse_enhanced_length(value)
 
     def _calculate_enhanced_auto_height(self, element: HTMLElement) -> float:
         """Enhanced auto height calculation"""
         style = element.computed_style
 
         if element.text_content and element.text_content.strip():
-            font_size = self._parse_enhanced_length(style.get('font-size', '16px'))
+            font_size = self.parse_enhanced_length(style.get('font-size', '16px'))
             line_height = style.get('line-height', '1.4')
 
             if line_height.endswith('px'):
-                line_height_value = self._parse_enhanced_length(line_height)
+                line_height_value = self.parse_enhanced_length(line_height)
             else:
                 try:
                     line_height_value = float(line_height) * font_size
                 except:
                     line_height_value = font_size * 1.4
 
-            padding_height = self._parse_enhanced_length(style.get('padding-top', '0')) + \
-                             self._parse_enhanced_length(style.get('padding-bottom', '0'))
+            padding_height = self.parse_enhanced_length(style.get('padding-top', '0')) + \
+                             self.parse_enhanced_length(style.get('padding-bottom', '0'))
 
             return max(line_height_value + padding_height, 40)
 
@@ -2125,7 +2126,7 @@ class EnhancedLayoutEngine(LayoutEngine):
 
         return 50  # Increased default from 30
 
-    def _parse_transform(self, transform_value: str) -> Transform:
+    def parse_transform(self, transform_value: str) -> Transform:
         """Parse CSS transform property"""
         transform = Transform()
 
@@ -2138,13 +2139,13 @@ class EnhancedLayoutEngine(LayoutEngine):
             args = [arg.strip() for arg in func_match.group(2).split(',')]
 
             if func_name == 'translateX':
-                transform.translate_x = self._parse_enhanced_length(args[0])
+                transform.translate_x = self.parse_enhanced_length(args[0])
             elif func_name == 'translateY':
-                transform.translate_y = self._parse_enhanced_length(args[0])
+                transform.translate_y = self.parse_enhanced_length(args[0])
             elif func_name == 'translate':
-                transform.translate_x = self._parse_enhanced_length(args[0])
+                transform.translate_x = self.parse_enhanced_length(args[0])
                 if len(args) > 1:
-                    transform.translate_y = self._parse_enhanced_length(args[1])
+                    transform.translate_y = self.parse_enhanced_length(args[1])
             elif func_name == 'scaleX':
                 transform.scale_x = float(args[0])
             elif func_name == 'scaleY':
@@ -2196,7 +2197,7 @@ class EnhancedLayoutEngine(LayoutEngine):
             return (0, 0, 0, 0)
 
         values = border_radius.split()
-        parsed_values = [self._parse_enhanced_length(v) for v in values]
+        parsed_values = [self.parse_enhanced_length(v) for v in values]
 
         if len(parsed_values) == 1:
             return (parsed_values[0],) * 4
@@ -2217,13 +2218,13 @@ class EnhancedLayoutEngine(LayoutEngine):
 
         if len(shadow_parts) >= 2:
             shadow = BoxShadow()
-            shadow.offset_x = self._parse_enhanced_length(shadow_parts[0])
-            shadow.offset_y = self._parse_enhanced_length(shadow_parts[1])
+            shadow.offset_x = self.parse_enhanced_length(shadow_parts[0])
+            shadow.offset_y = self.parse_enhanced_length(shadow_parts[1])
 
             if len(shadow_parts) >= 3:
-                shadow.blur_radius = self._parse_enhanced_length(shadow_parts[2])
+                shadow.blur_radius = self.parse_enhanced_length(shadow_parts[2])
             if len(shadow_parts) >= 4:
-                shadow.spread_radius = self._parse_enhanced_length(shadow_parts[3])
+                shadow.spread_radius = self.parse_enhanced_length(shadow_parts[3])
             if len(shadow_parts) >= 5:
                 shadow.color = self._parse_enhanced_color(shadow_parts[4])
 
@@ -3097,7 +3098,7 @@ class EnhancedMarkupRenderer(MarkupRenderer):
             text = text.title()
 
         # Get enhanced font
-        font = self._get_enhanced_font(style)
+        font = self.get_enhanced_font(style)
         color = self._parse_color(style.get('color', '#000000'))
 
         if font and color:
@@ -3349,7 +3350,7 @@ class EnhancedMarkupRenderer(MarkupRenderer):
             # Simplified - just draw normal border
             pygame.draw.rect(surface, color, rect, int(width))
 
-    def _get_enhanced_font(self, style: Dict[str, str]) -> Optional[pygame.font.Font]:
+    def get_enhanced_font(self, style: Dict[str, str]) -> Optional[pygame.font.Font]:
         """Get font with enhanced properties"""
         font_family = style.get('font-family', 'Arial')
         font_size = max(8, int(self._parse_length(style.get('font-size', '16px'))))

@@ -57,7 +57,7 @@ pip install pygame-ce html5lib tinycss2
 
 ```python
 import pygame
-from pygame_markup_gui import HTMLParser, CSSEngine, LayoutEngine, MarkupRenderer
+from pygame_markup_gui import HTMLParser, CSSEngine, LayoutEngine, BaseMarkupRenderer
 
 # Initialize pygame
 pygame.init()
@@ -95,17 +95,19 @@ h1 {
 parser = HTMLParser()
 css_engine = CSSEngine()
 layout_engine = LayoutEngine()
-renderer = MarkupRenderer()
+renderer = BaseMarkupRenderer()
 
 # Parse and render
 root_element = parser.parse_fragment(html)
 css_engine.parse_css(css)
+
 
 # Apply styles
 def apply_styles(element):
     element.computed_style = css_engine.compute_style(element)
     for child in element.children:
         apply_styles(child)
+
 
 apply_styles(root_element)
 layout_engine.layout(root_element, 800, 600)

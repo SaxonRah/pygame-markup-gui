@@ -1228,7 +1228,7 @@ class UltraEnhancedMarkupRenderer(EnhancedMarkupRenderer):
         text = self._apply_ultra_text_transforms(text, style)
 
         # Get font
-        font = self._get_enhanced_font(style)  # Use inherited enhanced font method
+        font = self.get_enhanced_font(style)  # Use inherited enhanced font method
         color = self._parse_color(style.get('color', '#000000'))
 
         if not font or not color:
@@ -1568,83 +1568,3 @@ class UltraEnhancedMarkupRenderer(EnhancedMarkupRenderer):
         else:
             target.blit(surface, (x, y))
 
-
-# Usage example with all ultra features:
-"""
-# Initialize ultra-enhanced engines (with full inheritance chain)
-css_engine = UltraEnhancedCSSEngine()  # Gets Enhanced + Base functionality
-layout_engine = UltraEnhancedLayoutEngine()  # Gets Enhanced + Base functionality  
-renderer = UltraEnhancedMarkupRenderer()  # Gets Enhanced + Base functionality
-
-# Ultra-enhanced CSS with all features
-ultra_css = '''
-@keyframes slideIn {
-    from { transform: translateX(-100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-.container {
-    display: flex;  /* Enhanced feature */
-    justify-content: center;  /* Enhanced feature */
-    align-items: center;  /* Enhanced feature */
-    animation: slideIn 0.5s ease-out;  /* Ultra feature */
-    backdrop-filter: blur(10px);  /* Ultra feature */
-}
-
-.button {
-    transition: all 0.3s ease;  /* Ultra feature */
-    cursor: pointer;  /* Ultra feature */
-    user-select: none;  /* Ultra feature */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);  /* Ultra feature */
-    border-radius: 8px;  /* Enhanced feature */
-    position: relative;  /* Enhanced feature */
-}
-
-.button:hover {
-    animation: pulse 0.6s infinite;  /* Ultra feature */
-    filter: brightness(1.2) contrast(1.1);  /* Ultra feature */
-    transform: scale(1.05);  /* Enhanced feature */
-}
-
-.card {
-    clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);  /* Ultra feature */
-    mix-blend-mode: multiply;  /* Ultra feature */
-    text-overflow: ellipsis;  /* Ultra feature */
-    word-break: break-word;  /* Ultra feature */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Enhanced feature */
-}
-
-.title {
-    font-variant: small-caps;  /* Ultra feature */
-    text-indent: 20px;  /* Ultra feature */
-    text-rendering: optimizeLegibility;  /* Ultra feature */
-    text-align: center;  /* Enhanced feature */
-}
-'''
-
-# Parse and apply
-root_element = parser.parse_fragment(html)
-css_engine.parse_css(ultra_css)
-
-# Apply styles (now gets all levels of functionality)
-def apply_styles_recursive(element):
-    element.computed_style = css_engine.compute_style(element)  # Ultra + Enhanced + Base
-    for child in element.children:
-        apply_styles_recursive(child)
-
-apply_styles_recursive(root_element)
-
-# Layout with all functionality
-layout_engine.layout(root_element, 1200, 800)  # Ultra + Enhanced + Base
-
-# Update animations (Ultra feature)
-updated_elements = css_engine.update_animations()
-
-# Render with all effects
-renderer.render_element(root_element, screen)  # Ultra + Enhanced + Base
-"""
