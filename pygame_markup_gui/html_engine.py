@@ -36,9 +36,30 @@ class HTMLElement:
         self.pygame_surface = None
         self.parent = None
 
+        # Skip processing comments entirely
+        if self.tag == 'comment':
+            return
+
         # Parse children if element provided
         if element is not None:
             self._parse_children(element)
+
+    def _parse_children(self, element):
+        """Parse child elements"""
+        if element is None:
+            return
+
+        try:
+            for child in element:
+                if child is not None:
+                    child_elem = HTMLElement(child)
+                    # Skip comments and empty text nodes
+                    if (child_elem.tag != 'comment' and
+                            (child_elem.tag != 'text' or child_elem.text_content.strip())):
+                        child_elem.parent = self
+                        self.children.append(child_elem)
+        except (TypeError, AttributeError):
+            pass
 
     @staticmethod
     def _get_tag_name(element) -> str:
@@ -46,10 +67,22 @@ class HTMLElement:
         if element is None:
             return 'text'
 
+        # Better comment detection
+        element_str = str(element)
+        element_type = str(type(element))
+
+        # Check if this is a comment node
+        if ('Comment' in element_type or
+                'comment' in element_type.lower() or
+                element_str.startswith('<!--') or
+                'Comment' in element_str):
+            return 'comment'
+
         if hasattr(element, 'tag'):
             tag = element.tag
             if '}' in str(tag):  # Namespace
-                return str(tag).split('}')[1]
+                tag_name = str(tag).split('}')[1]
+                return tag_name
             return str(tag)
         elif hasattr(element, 'name'):
             return str(element.name)
@@ -86,22 +119,6 @@ class HTMLElement:
         elif not hasattr(element, 'tag') and not hasattr(element, 'name'):  # Text node
             return str(element).strip()
         return ''
-
-    def _parse_children(self, element):
-        """Parse child elements"""
-        if element is None:
-            return
-
-        try:
-            for child in element:
-                if child is not None:
-                    child_elem = HTMLElement(child)
-                    child_elem.parent = self
-                    # Only add if it has content or is a real element
-                    if child_elem.tag != 'text' or child_elem.text_content:
-                        self.children.append(child_elem)
-        except (TypeError, AttributeError):
-            pass
 
     def find_by_tag(self, tag_name: str) -> Optional['HTMLElement']:
         """Find first child with given tag name"""
@@ -145,9 +162,20 @@ class HTMLParser:
 
         for elem in fragment:
             if elem is not None:
+                # Better comment filtering
+                element_str = str(elem)
+                element_type = str(type(elem))
+
+                # Skip all comment variations
+                if ('Comment' in element_type or
+                        'comment' in element_type.lower() or
+                        element_str.startswith('<!--')):
+                    continue
+
                 child_elem = HTMLElement(elem)
-                child_elem.parent = container
-                if child_elem.tag != 'text' or child_elem.text_content:
-                    container.children.append(child_elem)
+                if child_elem.tag != 'comment':  # Additional safety check
+                    child_elem.parent = container
+                    if child_elem.tag not in ['text'] or child_elem.text_content.strip():
+                        container.children.append(child_elem)
 
         return container

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Debug Enhanced</title>
+        <link rel="stylesheet" href="basic.css">
+    </head>
+    <body>
+        <div class="app">
+            <header class="header">
+                <h1>Interactive File Manager</h1>
+                <nav class="toolbar">
+                    <button id="new-btn" class="btn">New File</button>
+                    <button id="open-btn" class="btn">Open</button>
+                    <button id="save-btn" class="btn">Save</button>
+                </nav>
+            </header>
+
+            <main class="main-content">
+                <aside class="sidebar">
+                    <h3>Quick Access</h3>
+                    <button class="sidebar-btn">Desktop</button>
+                    <button class="sidebar-btn">Documents</button>
+                    <button class="sidebar-btn">Downloads</button>
+                </aside>
+
+                <section class="file-list">
+                    <div class="file-item" draggable="true">Projects</div>
+                    <div class="file-item" draggable="true">Images</div>
+                    <div class="file-item" draggable="true">readme.txt</div>
+                    <div class="file-item" draggable="true">notes.md</div>
+                    <div class="file-item" draggable="true">music.mp3</div>
+                </section>
+            </main>
+
+            <footer class="status-bar">
+                <span id="status">Ready</span>
+            </footer>
+        </div>
+    </body>
+    </html>

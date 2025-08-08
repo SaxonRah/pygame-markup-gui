@@ -1,0 +1,101 @@
+.app {
+        width: 800px;
+        height: 600px;
+        background-color: #2b2b2b;
+        display: flex;
+        flex-direction: column;
+        margin: 20px;
+        border: 1px solid #555;
+    }
+
+    .header {
+        background-color: #1e1e1e;
+        padding: 10px;
+        border-bottom: 1px solid #555;
+    }
+
+    h1 {
+        color: white;
+        font-size: 20px;
+        margin: 0 0 10px 0;
+    }
+
+    .toolbar {
+        display: flex;
+    }
+
+    .btn {
+        background-color: #007acc;
+        color: white;
+        padding: 8px 16px;
+        margin-right: 10px;
+        border: 1px solid #005a9e;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #0088ff;
+    }
+
+    .btn:active {
+        background-color: #005580;
+    }
+
+    .main-content {
+        display: flex;
+        flex: 1;
+    }
+
+    .sidebar {
+        width: 200px;
+        background-color: #333;
+        padding: 15px;
+        border-right: 1px solid #555;
+    }
+
+    h3 {
+        color: white;
+        font-size: 16px;
+        margin: 0 0 10px 0;
+    }
+
+    .sidebar-btn {
+        display: block;
+        width: 100%;
+        background-color: #444;
+        color: white;
+        padding: 8px 12px;
+        margin-bottom: 5px;
+        border: 1px solid #555;
+        text-align: left;
+    }
+
+    .file-list {
+        flex: 1;
+        padding: 15px;
+        background-color: #2b2b2b;
+    }
+
+    .file-item {
+        color: white;
+        padding: 10px;
+        margin-bottom: 8px;
+        background-color: #444;
+        border: 1px solid #555;
+        cursor: pointer;
+    }
+
+    .file-item:hover {
+        background-color: #505050;
+    }
+
+    .status-bar {
+        background-color: #1a1a1a;
+        padding: 5px 15px;
+        border-top: 1px solid #555;
+    }
+
+    #status {
+        color: #ccc;
+        font-size: 12px;
+    }

@@ -10,7 +10,7 @@ def main():
     # Initialize pygame
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Enhanced HTML5/CSS Interactive Renderer")
+    pygame.display.set_caption("HTML5/CSS Interactive Renderer")
     clock = pygame.time.Clock()
 
     # More complex HTML for testing interactions

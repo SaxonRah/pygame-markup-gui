@@ -2,6 +2,25 @@
   <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/pygame_markup_gui.png?raw=true" alt="PyGame Markup GUI"/>
 </p>
 
+# NOTE: THIS IS NOT WORKING AS INTENDED
+Below are screenshots of the PyGame Rendering next to actual rendered HTML/CSS.
+<p align="center">
+  <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/basic.png?raw=true" alt="Basic"/>
+</p>
+<p align="center">
+  <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/debug_enhanced.png?raw=true" alt="Debug Enhanced"/>
+</p>
+<p align="center">
+  <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/enhanced.png?raw=true" alt="Enhanced"/>
+</p>
+<p align="center">
+  <img src="https://github.com/SaxonRah/pygame-markup-gui/blob/main/images/ultra.png?raw=true" alt="Ultra"/>
+</p>
+
+### As you can see, it's not laying out various things correctly.
+
+---
+
 # PyGame Markup GUI - [Version 0.1.0]
 
 A pygame-based HTML5/CSS3 rendering engine that allows you to create interactive user interfaces using familiar web technologies while leveraging pygame's performance and game development features.
