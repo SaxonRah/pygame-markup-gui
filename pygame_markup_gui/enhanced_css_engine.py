@@ -3128,8 +3128,10 @@ class EnhancedMarkupRenderer(MarkupRenderer):
 
             surface.blit(text_surface, (x, y))
 
-    def _has_transform(self, transform: Transform) -> bool:
+    def _has_transform(self, transform) -> bool:
         """Check if element has any transforms"""
+        if transform is None:
+            return False
         return (transform.translate_x != 0 or transform.translate_y != 0 or
                 transform.scale_x != 1 or transform.scale_y != 1 or
                 transform.rotate != 0 or transform.skew_x != 0 or transform.skew_y != 0)

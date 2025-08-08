@@ -3,6 +3,7 @@ import sys
 from pygame_markup_gui import HTMLParser, CSSEngine, LayoutEngine
 from pygame_markup_gui.interactive_engine import InteractionManager, FormHandler, ScrollableContainer
 from pygame_markup_gui.debug_renderer import DebugRenderer
+from pygame_markup_gui.unified_layout_engine import UnifiedLayoutEngine
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -157,7 +158,8 @@ def main():
     # Create engine instances
     parser = HTMLParser()
     css_engine = CSSEngine()
-    layout_engine = LayoutEngine()
+    # layout_engine = LayoutEngine(enable_debug=True)
+    layout_engine = UnifiedLayoutEngine(enable_debug=True)
     # renderer = MarkupRenderer()
     renderer = DebugRenderer()
 

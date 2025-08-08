@@ -10,6 +10,7 @@ from pygame_markup_gui.enhanced_css_engine import (
     EnhancedLayoutEngine,
     EnhancedMarkupRenderer
 )
+from pygame_markup_gui.unified_layout_engine import UnifiedLayoutEngine
 
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 1000
@@ -397,7 +398,8 @@ def main():
     # Create enhanced engine instances
     parser = HTMLParser()
     css_engine = EnhancedCSSEngine()
-    layout_engine = EnhancedLayoutEngine()
+    # layout_engine = EnhancedLayoutEngine()
+    layout_engine = UnifiedLayoutEngine(enable_debug=True)
     # renderer = EnhancedMarkupRenderer()
     renderer = DebugRenderer()
 

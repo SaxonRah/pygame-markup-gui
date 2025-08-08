@@ -17,6 +17,7 @@ from pygame_markup_gui.ultra_enhanced_css_engine import (
 )
 from pygame_markup_gui.enhanced_css_engine import PositionType
 from pygame_markup_gui.interactive_engine import InteractionManager, FormHandler
+from pygame_markup_gui.unified_layout_engine import UnifiedLayoutEngine
 
 # Screen configuration
 SCREEN_WIDTH = 2560/2
@@ -2534,7 +2535,8 @@ def main():
     # Create ultra-enhanced engine instances
     parser = HTMLParser()
     css_engine = UltraEnhancedCSSEngine()
-    layout_engine = UltraEnhancedLayoutEngine()
+    # layout_engine = UltraEnhancedLayoutEngine()
+    layout_engine = UnifiedLayoutEngine(enable_debug=True)
     # renderer = UltraEnhancedMarkupRenderer()
     renderer = DebugRenderer()
 
